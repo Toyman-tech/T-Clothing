@@ -6,7 +6,6 @@ import directoryReducer from './directory/directory.reducer';
 import shopReducer from './shop/shop.reducer';
 
 import cartReducer from './cart/cart.reducer';
-import { collection } from 'firebase/firestore';
 
 const persistConfig={
  key:'root',
