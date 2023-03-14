@@ -4,7 +4,7 @@ import {  Routes,  Route} from 'react-router-dom';
 import { Navigate } from 'react-router-dom';
 import ShopPage from './pages/shop/shop.components.jsx';
 import HomePage from "./pages/homepage/homepage.component.jsx";
-import  { auth, createUserProfileDocument } from './firebase/firebase.utils.js';
+import  { auth, createUserProfileDocument, addCollectionAndDocuments } from './firebase/firebase.utils.js';
 import Header from './components/header/header.component.jsx';
 
 import SignInAndSignUpPage from './pages/sign-in-and-sign-out/sign-in-and-sign-out.component.jsx';
@@ -13,7 +13,7 @@ import { setCurrentUser } from './redux/user/user.action.js';
 import { selectCurrentUser } from './redux/user/user.selectors.js';
 import {createStructuredSelector} from 'reselect';
 import CheckoutPage from './pages/checkout/checkout.component.jsx';
-
+import { selectCollectionsForPreview } from './redux/shop/shop.selectors.js';
 
  class App extends React.Component {
  
@@ -22,7 +22,7 @@ import CheckoutPage from './pages/checkout/checkout.component.jsx';
 
   componentDidMount(){
     
-    const {setCurrentUser}= this.props;
+    const {setCurrentUser, collectionsArray}= this.props;
     this.unsubscribeFromAuth = auth.onAuthStateChanged( async userAuth=>  {
       if (userAuth){
          const userRef = await createUserProfileDocument(userAuth);
@@ -35,24 +35,11 @@ import CheckoutPage from './pages/checkout/checkout.component.jsx';
             ...doc
               
           }
-        }
-        // ()=> {
-        //  // console.log(this.state); 
-        // }
-        )
-        
-       // console.log(this.state);
-       // console.log( 'value:', doc);
-      });
-        
-
-
-        //  userRef.onSnapshot((snapShot)=> {
-        //    console.log("value:", snapShot.data());
-        //  })
-        
+        })
+      });  
       } 
         setCurrentUser(userAuth);
+        addCollectionAndDocuments('collections', collectionsArray.map(({title, items})=>({title, items})))
     });
     
   }
@@ -79,7 +66,8 @@ import CheckoutPage from './pages/checkout/checkout.component.jsx';
 }
 
  const mapStateToProps = createStructuredSelector ({
-    currentUser : selectCurrentUser 
+    currentUser : selectCurrentUser, 
+    collectionsArray: selectCollectionsForPreview
  })
 
  const mapDispatchToProps = (dispatch) => {

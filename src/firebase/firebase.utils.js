@@ -1,7 +1,7 @@
 import { initializeApp } from '@firebase/app';
 import 'firebase/firestore';
 import 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc} from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, collection, writeBatch} from 'firebase/firestore';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 import { signInWithPopup } from 'firebase/auth';
@@ -16,6 +16,7 @@ const firebaseConfig = {
     appId: "1:974675889668:web:79c058fda144c16324af51",
     measurementId: "G-7Q17Y57K37"
 };
+const app = initializeApp (firebaseConfig);
  //  const docRef = doc (firestore, 'users/udg837e87eysb' );
   //  const docSnap = await getDoc (docRef);
   //     console.log(docSnap);
@@ -46,8 +47,21 @@ export const createUserProfileDocument =  async (
   
     return userRef;
   };
-const app = initializeApp(firebaseConfig);
+
+  export const addCollectionAndDocuments = async(collectionKey, objectsToAdd)=> {
+    const collectionRef = collection(firestore,  collectionKey)
+    console.log(collectionRef);
+
+    const batch = writeBatch(firestore);
     
+  objectsToAdd.forEach(obj => {
+    const newDocRef = doc( collectionRef )
+     console.log(newDocRef);
+     batch.set(newDocRef, obj)
+       });
+    return  batch.commit();
+  };
+  
   export const auth = getAuth(app);
     export const firestore = getFirestore(app);
 
